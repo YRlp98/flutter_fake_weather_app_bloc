@@ -6,3 +6,9 @@ abstract class WeatherState extends Equatable {
 }
 
 class WeatherInitial extends WeatherState {}
+
+class WeatherLoaded extends WeatherState {
+  final Weather weather;
+
+  WeatherLoaded(this.weather) : super([weather]);
+}
