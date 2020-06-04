@@ -5,8 +5,8 @@ class Weather extends Equatable {
   final String cityName;
   final double temperature;
 
-  Weather(
+  Weather({
     @required this.cityName,
     @required this.temperature,
-  ) : super([cityName, temperature]);
+  }) : super([cityName, temperature]);
 }
