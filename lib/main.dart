@@ -40,18 +40,28 @@ class _WeatherPageState extends State<WeatherPage> {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 16),
           alignment: Alignment.center,
-          child: BlocBuilder(
+          child: BlocListener(
             bloc: weatherBloc,
-            builder: (BuildContext context, WeatherState state) {
-              // Changing the UI based on the current state
-              if (state is WeatherInitial) {
-                return buildInitialInput();
-              } else if (state is WeatherLoading) {
-                return buildLoading();
-              } else if (state is WeatherLoaded) {
-                return buildColumnWithData(state.weather);
+            listener: (context, WeatherState state) {
+              if (state is WeatherLoaded) {
+                print("Loaded: ${state.weather.cityName}");
               }
             },
+            child: BlocBuilder(
+              bloc: weatherBloc,
+              // The builder funcation has to be "pure function."
+              // That is, it only returns a Widget and doen't do anything else.
+              builder: (BuildContext context, WeatherState state) {
+                // Changing the UI based on the current state
+                if (state is WeatherInitial) {
+                  return buildInitialInput();
+                } else if (state is WeatherLoading) {
+                  return buildLoading();
+                } else if (state is WeatherLoaded) {
+                  return buildColumnWithData(state.weather);
+                }
+              },
+            ),
           ),
         ),
       ),
