@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fake_weather_app_bloc/model/weather.dart';
+
+import 'bloc/weather_bloc.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,34 +26,74 @@ class WeatherPage extends StatefulWidget {
 }
 
 class _WeatherPageState extends State<WeatherPage> {
+  // Instantiate the BLoC
+  final weatherBloc = WeatherBloc();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Fake Weather App"),
       ),
-      body: Container(
-        padding: EdgeInsets.symmetric(vertical: 16),
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Text(
-              "City Name",
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            Text(
-              "35 °C",
-              style: TextStyle(fontSize: 80),
-            ),
-            CityInputField(),
-          ],
+      body: BlocProvider(
+        bloc: weatherBloc,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 16),
+          alignment: Alignment.center,
+          child: BlocBuilder(
+            bloc: weatherBloc,
+            builder: (BuildContext context, WeatherState state) {
+              // Changing the UI based on the current state
+              if (state is WeatherInitial) {
+                return buildInitialInput();
+              } else if (state is WeatherLoading) {
+                return buildLoading();
+              } else if (state is WeatherLoaded) {
+                return buildColumnWithData(state.weather);
+              }
+            },
+          ),
         ),
       ),
     );
+  }
+
+  Widget buildInitialInput() {
+    return Center(
+      child: CityInputField(),
+    );
+  }
+
+  Widget buildLoading() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Column buildColumnWithData(Weather weather) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Text(
+          weather.cityName,
+          style: TextStyle(
+            fontSize: 40,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        Text(
+          "${weather.temperature.toStringAsFixed(1)} °C",
+          style: TextStyle(fontSize: 80),
+        ),
+        CityInputField(),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    weatherBloc.dispose();
   }
 }
 
@@ -80,6 +124,10 @@ class _CityInputFieldState extends State<CityInputField> {
   }
 
   void submitCityName(String cityName) {
-    // We will use the city name to search for the fake forecast
+    // Get the BLoC usuing the BlocProvider
+    final weatherBloc = BlocProvider.of<WeatherBloc>(context);
+
+    // Initiate getting the weather
+    weatherBloc.dispatch(GetWeather(cityName));
   }
 }
