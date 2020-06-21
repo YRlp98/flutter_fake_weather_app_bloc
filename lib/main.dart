@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fake_weather_app_bloc/model/weather.dart';
+import 'package:bloc/bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import 'bloc/weather_bloc.dart';
 
 import 'model/weather.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  BlocSupervisor.delegate = await HydratedBlocDelegate.build();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
