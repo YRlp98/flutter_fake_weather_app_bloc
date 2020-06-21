@@ -9,6 +9,7 @@ import 'bloc/weather_bloc.dart';
 import 'model/weather.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   BlocSupervisor.delegate = await HydratedBlocDelegate.build();
   runApp(MyApp());
 }
