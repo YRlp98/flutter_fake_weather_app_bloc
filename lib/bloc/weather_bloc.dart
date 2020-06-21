@@ -11,18 +11,27 @@ part 'weather_state.dart';
 
 class WeatherBloc extends HydratedBloc<WeatherEvent, WeatherState> {
   @override
-  WeatherState get initialState => WeatherInitial();
+  WeatherState get initialState {
+    return super.initialState ?? WeatherInitial();
+  }
 
   @override
   WeatherState fromJson(Map<String, dynamic> json) {
-    // TODO: implement fromJson
-    throw UnimplementedError();
+    try {
+      final weather = Weather.fromJson(json);
+      return WeatherLoaded(weather);
+    } catch (_) {
+      return null;
+    }
   }
 
   @override
   Map<String, dynamic> toJson(WeatherState state) {
-    // TODO: implement toJson
-    throw UnimplementedError();
+    if (state is WeatherLoaded) {
+      return state.weather.toJson();
+    } else {
+      return null;
+    }
   }
 
   @override
